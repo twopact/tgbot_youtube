@@ -40,7 +40,7 @@ def search_videos(message):
 # Обрабатываем нажатие на кнопку "Искать канал"
 @bot.message_handler(func=lambda message: message.text == 'Искать канал')
 def search_channel(message):
-    message = bot.send_message(message.chat.id, "Введите id YouTube-канала, на котором вы хотите найти видео")
+    message = bot.send_message(message.chat.id, 'Введите id YouTube-канала, на котором вы хотите найти видео, например, "MrBeast" или "user-zn5cc1xv8x"')
     bot.register_next_step_handler(message, search_from_channel)
 
 # Функция для поиска видео по запросу пользователя
@@ -51,6 +51,9 @@ def search(message):
     sleep(3)
     videos = driver.find_elements(By.ID, "video-title")
     num_videos = len(videos)
+    if num_videos == 0:
+        bot.send_message(message.chat.id, "Ничего не найдено, напишите другой текст")
+        return
     bot.send_message(message.chat.id, f"Найдено {num_videos} видео. Сколько из них вы хотите получить?")
     bot.register_next_step_handler(message, send_videos, videos)
 
@@ -62,6 +65,9 @@ def search_from_channel(message):
     sleep(3)
     videos = driver.find_elements(By.ID, "thumbnail")
     num_videos = len(videos)
+    if num_videos == 0:
+        bot.send_message(message.chat.id, "Такой канал не найден, введите другой")
+        return
     bot.send_message(message.chat.id, f"Найдено {num_videos} видео. Сколько из них вы хотите получить?")
     bot.register_next_step_handler(message, send_channel_videos, videos)
 
