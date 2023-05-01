@@ -1,18 +1,19 @@
+import os
 import telebot
 from telebot import types
 from time import sleep
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver import Chrome
 from selenium import webdriver
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--disable-gpu")
-browser = webdriver.Chrome(options=chrome_options)
 
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--no-sandbox")
+options = chrome_options
+driver = webdriver.Chrome(options=options)
+driver.get("https://www.google.com")
 
 token = "6132324027:AAHWbW7neboOBD130vLM1P_-1bBY3ld5AH4"
 bot = telebot.TeleBot(token)
@@ -46,9 +47,9 @@ def search_channel(message):
 def search(message):
     bot.send_message(message.chat.id, "Вы выбрали \"Искать видео\". \nПожалуйста, подождите, начинаю поиск...")
     video_href = "https://www.youtube.com/results?search_query=" + message.text
-    browser.get(video_href)
+    driver.get(video_href)
     sleep(3)
-    videos = browser.find_elements(By.ID, "video-title")
+    videos = driver.find_elements(By.ID, "video-title")
     num_videos = len(videos)
     bot.send_message(message.chat.id, f"Найдено {num_videos} видео. Сколько из них вы хотите получить?")
     bot.register_next_step_handler(message, send_videos, videos)
@@ -57,9 +58,9 @@ def search(message):
 # Функция для поиска видео на канале
 def search_from_channel(message):
     bot.send_message(message.chat.id, "Вы выбрали \"Искать канал\", пожалуйста, подождите, начинаю поиск...")
-    browser.get("https://www.youtube.com/@" + message.text + "/videos")
+    driver.get("https://www.youtube.com/@" + message.text + "/videos")
     sleep(3)
-    videos = browser.find_elements(By.ID, "thumbnail")
+    videos = driver.find_elements(By.ID, "thumbnail")
     num_videos = len(videos)
     bot.send_message(message.chat.id, f"Найдено {num_videos} видео. Сколько из них вы хотите получить?")
     bot.register_next_step_handler(message, send_channel_videos, videos)
@@ -89,7 +90,7 @@ def send_channel_videos(message, videos):
     # Отправляем запрошенное количество видео
     for i in range(count):
         # Находим элементы с видео на странице и отправляем ссылку на i-тое видео
-        bot.send_message(message.chat.id, browser.find_elements(By.ID, "dismissible")[i].find_element(By.ID, "thumbnail").get_attribute("href"))
+        bot.send_message(message.chat.id, driver.find_elements(By.ID, "dismissible")[i].find_element(By.ID, "thumbnail").get_attribute("href"))
 
 
 print('#Bot started')
