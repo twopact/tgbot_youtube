@@ -1,10 +1,10 @@
 import os
 import telebot
+from config import token
 from telebot import types
 from time import sleep
-from selenium.webdriver.common.by import By
 from selenium import webdriver
-
+from selenium.webdriver.common.by import By
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
@@ -15,7 +15,7 @@ options = chrome_options
 driver = webdriver.Chrome(options=options)
 driver.get("https://www.google.com")
 
-token = "6132324027:AAHWbW7neboOBD130vLM1P_-1bBY3ld5AH4"
+
 bot = telebot.TeleBot(token)
 
 # Создаем объект для клавиатуры и добавляем кнопки
@@ -97,7 +97,3 @@ def send_channel_videos(message, videos):
     for i in range(count):
         # Находим элементы с видео на странице и отправляем ссылку на i-тое видео
         bot.send_message(message.chat.id, driver.find_elements(By.ID, "dismissible")[i].find_element(By.ID, "thumbnail").get_attribute("href"))
-
-
-print('#Bot started')
-bot.polling(none_stop=True, interval=0)
