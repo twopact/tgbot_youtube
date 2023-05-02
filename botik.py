@@ -5,6 +5,8 @@ from telebot import types
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+# pip freeze > requirements.txt
+# pip install -r requirements.txt
 
 
 chrome_options = webdriver.ChromeOptions()
